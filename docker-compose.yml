@@ -19,6 +19,7 @@ services:
       - "3309:3306"             # Avoids XAMPP conflict
     volumes:
       - db-data:/var/lib/mysql
+      - ./database_dump.sql:/docker-entrypoint-initdb.d/database_dump.sql
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: seytest_adminpanel
