@@ -14,27 +14,47 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install required PHP extensions for Laravel
-# intl is now possible because libicu-dev is installed
 RUN docker-php-ext-configure intl \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl
 
 # Enable Apache mod_rewrite (for Laravel pretty URLs)
 RUN a2enmod rewrite
 
-# Change Apache document root to Laravel's public folder
-RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
-
 # Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy your Laravel code into the container
+# Copy project files
 COPY . .
+
+# Install dependencies (production mode for Render)
+RUN composer install --optimize-autoloader --no-dev --no-interaction
+
+# Change Apache document root to Laravel's public folder
+RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 
 # Fix permissions for Laravel folders
 RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Expose port 80
+# Create storage link (for uploaded files/images)
+RUN php artisan storage:link || true
+
+# Clear and cache config/routes/views (helps on fresh deploy)
+RUN php artisan config:clear \
+    && php artisan route:clear \
+    && php artisan view:clear \
+    && php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
+
+# Dynamic port binding: Render injects $PORT, fallback to 80 for local
+RUN sed -i "s/Listen 80/Listen \${PORT:-80}/g" /etc/apache2/ports.conf \
+    && sed -i "s/:80/:${PORT:-80}/g" /etc/apache2/sites-available/000-default.conf
+
+# Expose port (for documentation — Render uses $PORT)
 EXPOSE 80
+
+# Start Apache in foreground
+CMD apache2-foreground
