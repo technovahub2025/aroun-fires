@@ -122,8 +122,8 @@
                         Systems & Safety Equipments</a>
                     All Rights
                     Reserved.</p>
-                <p class="site-footer-two__bottom-text">Designed & Developed by <a
-                        href="https://www.seyfertinfotech.com/" target="_blank">Seyfert Infotech</a>
+                <p class="site-footer-two__bottom-text">Managed by <a
+                        href="https://www.seyfertinfotech.com/" target="_blank">Technovahub</a>
                 </p>
             </div>
         </div>
