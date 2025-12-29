@@ -123,7 +123,7 @@
                     All Rights
                     Reserved.</p>
                 <p class="site-footer-two__bottom-text">Managed by <a
-                        href="https://www.seyfertinfotech.com/" target="_blank">Technovahub</a>
+                        href="https://www.technovahub.in/" target="_blank">Technovahub</a>
                 </p>
             </div>
         </div>
