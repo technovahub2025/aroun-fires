@@ -384,7 +384,8 @@ class PageController extends Controller
             'price' => 'required|numeric',
             'description' => 'nullable|string',
             //'url' => 'nullable|url',
-            'url' => ['nullable', 'regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/'],
+            'url' => 'nullable|string|max:500',
+            //'url' => ['nullable', 'regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/'],
             'croppedImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5048',
         ]);
 
