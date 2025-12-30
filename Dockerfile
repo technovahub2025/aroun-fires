@@ -36,12 +36,13 @@ RUN composer install --optimize-autoloader --no-dev --no-interaction
 RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 
 # Fix permissions
-RUN chown -R www-data:www-data storage bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
-# Create storage link (critical for images/assets)
+# Create storage link
 RUN php artisan storage:link || true
 
-# Clear caches on build (helps fresh deploy)
+# Clear caches on build
 RUN php artisan config:clear \
     && php artisan route:clear \
     && php artisan view:clear
@@ -49,20 +50,22 @@ RUN php artisan config:clear \
 # Suppress Apache ServerName warning
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-# Create startup script to handle Render's $PORT and runtime cache clear
+# Startup script
 RUN echo '#!/bin/bash\n\
-# Handle Render $PORT (fallback to 80 for local)\n\
+set -e\n\
+echo "Starting Laravel on Render..."\n\
 if [ -n "$PORT" ]; then\n\
+  echo "Using Render PORT: $PORT"\n\
   sed -i "s/Listen 80/Listen $PORT/g" /etc/apache2/ports.conf\n\
   sed -i "s/:80/:$PORT/g" /etc/apache2/sites-available/000-default.conf\n\
 fi\n\
-# Runtime cache clear (safe in production)\n\
+echo "Runtime cache clear..."\n\
 php artisan config:clear\n\
 php artisan route:clear\n\
 php artisan view:clear\n\
-# Start Apache\n\
-apache2-foreground' > /usr/local/bin/start.sh \
+php artisan storage:link || true\n\
+echo "Starting Apache..."\n\
+exec apache2-foreground' > /usr/local/bin/start.sh \
     && chmod +x /usr/local/bin/start.sh
 
-# Use startup script
 CMD ["/usr/local/bin/start.sh"]

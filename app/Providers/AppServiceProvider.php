@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+   /* public function boot()
     {
         // Force all generated URLs (asset(), route(), url()) to use HTTPS in production
         if (env('APP_ENV') === 'production') {
@@ -32,4 +32,18 @@ class AppServiceProvider extends ServiceProvider
         // Optional: Force HTTPS always (even locally) — uncomment the line below if you prefer
         // URL::forceScheme('https');
     }
+}*/
+
+public function boot()
+{
+    // Force HTTP locally (for development only)
+    if (app()->environment('local')) {
+        URL::forceScheme('http');
+    }
+
+    // Force HTTPS in production
+    if (app()->environment('production')) {
+        URL::forceScheme('https');
+    }
+}
 }
