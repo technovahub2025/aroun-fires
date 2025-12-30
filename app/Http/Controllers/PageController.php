@@ -209,6 +209,7 @@ class PageController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'code' => 'required',
+            //'url' => 'nullable|url',
             'url' => ['nullable', 'regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/'],
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5048',
         ]);
@@ -382,7 +383,8 @@ class PageController extends Controller
             'subproduct' => 'required|string|max:255',
             'price' => 'required|numeric',
             'description' => 'nullable|string',
-            'url' => 'nullable|url',
+            //'url' => 'nullable|url',
+            'url' => ['nullable', 'regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/'],
             'croppedImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5048',
         ]);
 
