@@ -5,6 +5,14 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\WebsiteController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/debug-db-host', function () {
+    return [
+        'env_host' => getenv('DB_HOST'),
+        'config_host' => config('database.connections.mysql.host'),
+        'port' => config('database.connections.mysql.port'),
+    ];
+});
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
